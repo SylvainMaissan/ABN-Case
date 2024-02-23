@@ -14,15 +14,21 @@ def read_data(file_path: str) -> DataFrame:
 
 
 def clean_client_data(client_df: DataFrame) -> DataFrame:
+    if SELECTED_COUNTRIES:
+        client_df = client_df.filter(client_df.country.isin(SELECTED_COUNTRIES))
     return (
         client_df
-        .filter(client_df.country.isin(SELECTED_COUNTRIES))
-        .drop("PII")
+        .drop("first_name", "last_name", "country")
+        .dropDuplicates()
     )
 
 
 def clean_financial_data(financial_df: DataFrame) -> DataFrame:
-    return financial_df.drop("Creditcard")
+    return (
+        financial_df
+        .drop("cc_n")
+        .dropDuplicates(["email"])
+    )
 
 
 def join_dataframes(client_df: DataFrame, financial_df) -> DataFrame:
