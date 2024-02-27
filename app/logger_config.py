@@ -1,3 +1,4 @@
+"""Creating and configuring a custom logger"""
 import logging
 
 import coloredlogs
@@ -10,7 +11,12 @@ coloredlogs.DEFAULT_LEVEL_STYLES = {
 }
 
 
-def get_custom_logger(name):
+def get_custom_logger(name) -> logging.Logger:
+    """
+    Create a custom logger.
+    :param name: Name of the logger
+    :return: Logger
+    """
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)  # Set the log level
 
@@ -28,7 +34,8 @@ def get_custom_logger(name):
     ch.setLevel(logging.DEBUG)
 
     # Create console formatter
-    formatter = coloredlogs.ColoredFormatter(fmt='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    formatter = (coloredlogs
+                 .ColoredFormatter(fmt='%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
     ch.setFormatter(formatter)
     logger.addHandler(ch)
 
