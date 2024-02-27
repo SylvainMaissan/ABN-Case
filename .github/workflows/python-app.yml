@@ -28,16 +28,11 @@ jobs:
       with:
         java-version: '17'
         distribution: temurin
-    # - name: Setup Spark
-    #   uses: vemonet/setup-spark@v1
-    #   with:
-    #     spark-version: '3.4.1'
-    #     hadoop-version: '3'
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install flake8 pytest pylint coloredlogs
-        pip install pyspark
+        # pip install flake8 pytest pylint coloredlogs
+        # pip install pyspark
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         
     - name: Lint with flake8
