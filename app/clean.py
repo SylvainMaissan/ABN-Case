@@ -1,34 +1,64 @@
+import inspect
+from typing import List
+
 from pyspark.sql import DataFrame
 from pyspark.sql import SparkSession
+
+import clean_functions as cf
+from logger_config import get_custom_logger
 
 spark = (SparkSession.builder
          .master("local")
          .appName("DataCleaning")
          .getOrCreate())
+spark.sparkContext.setLogLevel("ERROR")
 
-SELECTED_COUNTRIES = ["UK", "NL"]
-
-
-def read_data(file_path: str) -> DataFrame:
-    return spark.read.csv(file_path, header=True, inferSchema=True)
+logger = get_custom_logger(__name__)
 
 
-def clean_client_data(client_df: DataFrame) -> DataFrame:
-    return (
-        client_df
-        .filter(client_df.country.isin(SELECTED_COUNTRIES))
-        .drop("PII")
-    )
+def clean_client_data(client_df: DataFrame, countries: List[str] = None) -> DataFrame:
+    if countries:
+        logger.debug(
+            f"Countries used as filter arguments: {countries} in {inspect.currentframe().f_code.co_name} function")
+        client_df = cf.filter_data(client_df, "country", countries)
+    return client_df.drop("first_name", "last_name", "country")
 
 
 def clean_financial_data(financial_df: DataFrame) -> DataFrame:
-    return financial_df.drop("Creditcard")
+    return financial_df.drop("cc_n")
 
 
-def join_dataframes(client_df: DataFrame, financial_df) -> DataFrame:
-    return (
-        client_df
-        .join(financial_df, on="client_id", how="inner")
-        .drop("client_id")
-        .withColumnsRenamed({"id": "client_identifier", "btc_a": "bitcoin_address", "cc_t": "credit_card_type"})
-    )
+def join_dataframes(client_df: DataFrame, financial_df: DataFrame) -> DataFrame:
+    return client_df.join(financial_df, on="id", how="left").drop("client_id")
+
+
+def log_dataframe_metadata(df: DataFrame, df_name: str, step_name: str) -> None:
+    logger.info(f"{df_name} shape after {step_name}: ({df.count()}, {len(df.columns)})")
+    logger.debug(f"{df_name} columns after loading: {df.columns}")
+
+
+def process_data(client_path: str, financial_path: str, countries: List[str]) -> None:
+    # Read data into a DataFrame
+    client_df = cf.read_data(spark, client_path)
+    financial_df = cf.read_data(spark, financial_path)
+    log_dataframe_metadata(client_df, "Client Dataset", "Extraction")
+    log_dataframe_metadata(financial_df, "Financial Dataset", "Extraction")
+
+    # Clean and prepare for joining data
+    client_df = clean_client_data(client_df, countries)
+    financial_df = clean_financial_data(financial_df)
+    log_dataframe_metadata(client_df, "Client Dataset", "Cleaning")
+    log_dataframe_metadata(financial_df, "Financial Dataset", "Cleaning")
+
+    # Join the two DataFrames
+    processed_df = join_dataframes(client_df, financial_df)
+    log_dataframe_metadata(processed_df, "Processed Dataset", "Joining")
+
+    # Rename Columns
+    processed_df = cf.rename_columns(processed_df, name_mapping={"id": "client_identifier", "btc_a": "bitcoin_address",
+                                                                 "cc_t": "credit_card_type"})
+    log_dataframe_metadata(processed_df, "Processed Dataset", "Renaming")
+
+    processed_df.write.csv("client_data/client_data.csv", mode="overwrite", header=True)
+
+    logger.info("\n---------------------------------------------------------------------------------------------\n")
