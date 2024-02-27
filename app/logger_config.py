@@ -6,8 +6,7 @@ FILE_LOG_LEVEL = logging.INFO
 CONSOLE_LOG_LEVEL = logging.INFO
 
 coloredlogs.DEFAULT_LEVEL_STYLES = {
-    'info': {'color': 'white'},  # Set info level logs to white
-    # Add or modify other levels as needed
+    'info': {'color': 'white'}
 }
 
 
