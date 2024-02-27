@@ -5,8 +5,8 @@ from typing import List
 from pyspark.sql import DataFrame
 from pyspark.sql import SparkSession
 
-import clean_functions as cf
-from logger_config import get_custom_logger
+import app.clean_functions as cf
+from app.logger_config import get_custom_logger
 
 spark = (SparkSession.builder
          .master("local")

@@ -1,7 +1,17 @@
+import logging
+
 import pytest
+from chispa import assert_df_equality
 from pyspark.sql import SparkSession
 
 from app.clean_functions import filter_data, rename_columns, read_data
+
+
+@pytest.fixture(autouse=True)
+def disable_logging():
+    logging.disable(logging.CRITICAL)  # Disable all logging calls of CRITICAL and below
+    yield
+    logging.disable(logging.NOTSET)  # Re-enable logging
 
 
 @pytest.fixture(scope="session")
@@ -19,7 +29,7 @@ def spark_session():
 
 def test_read_data(spark_session):
     # Arrange
-    file_path = "ABN-Case/tests/example.csv"
+    file_path = "example.csv"
     expected_columns = ["id", "name", "country"]
 
     # Act
@@ -48,7 +58,7 @@ def test_filter_data(spark_session):
                             ["Netherlands", "United Kingdom", ])
 
     # Assert
-    assert output_df.collect() == expected_output_df.collect()
+    assert_df_equality(output_df, expected_output_df)
 
 
 def test_rename_columns(spark_session):
@@ -74,4 +84,4 @@ def test_rename_columns(spark_session):
     output_df = rename_columns(input_df, name_mapping)
 
     # Assert
-    assert output_df.collect() == expected_df.collect()
+    assert_df_equality(output_df, expected_df)
