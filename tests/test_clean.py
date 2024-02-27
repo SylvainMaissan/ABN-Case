@@ -3,8 +3,9 @@ import logging
 import pytest
 from chispa import assert_df_equality
 from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType, StructField, IntegerType, StringType
 
-from app.clean import clean_client_data, clean_financial_data, join_dataframes
+from app.clean import clean_client_data, clean_financial_data, join_dataframes, process_data
 
 
 @pytest.fixture(autouse=True)
@@ -90,6 +91,31 @@ def test_clean_join_data(spark_session):
 
     # Act
     cleaned_df = join_dataframes(client_df, financial_df)
+
+    # Assert
+    assert_df_equality(expected_output_df, cleaned_df, ignore_row_order=True)
+
+
+def test_process_data(spark_session):
+    # Arrange
+    client_path = "example1.csv"
+    financial_path = "example2.csv"
+    countries = ["United Kingdom", "Netherlands"]
+
+    schema = StructType([
+        StructField("client_identifier", IntegerType(), True),
+        StructField("email", StringType(), True),
+        StructField("bitcoin_address", StringType(), True),
+        StructField("credit_card_type", StringType(), True)
+    ])
+
+    expected_output_df = spark_session.createDataFrame([
+        (2, "bobjohnson@email.com", "1Js9BA1rV31hJFmN25rh8HWfrrYLXAyw9T", "jcb"),
+        (3, "samsmithn@email.com", "1CoG9ciLQVQCnia5oXfXPSag4DQ4iYeSpd", "diners - club - enroute")
+    ], schema=schema)
+
+    # Act
+    cleaned_df = process_data(client_path, financial_path, countries)
 
     # Assert
     assert_df_equality(expected_output_df, cleaned_df, ignore_row_order=True)

@@ -7,11 +7,11 @@ from pyspark.sql import SparkSession
 from app.clean_functions import filter_data, rename_columns, read_data
 
 
-@pytest.fixture(autouse=True)
-def disable_logging():
-    logging.disable(logging.CRITICAL)  # Disable all logging calls of CRITICAL and below
-    yield
-    logging.disable(logging.NOTSET)  # Re-enable logging
+# @pytest.fixture(autouse=True)
+# def disable_logging():
+#     logging.disable(logging.CRITICAL)  # Disable all logging calls of CRITICAL and below
+#     yield
+#     logging.disable(logging.NOTSET)  # Re-enable logging
 
 
 @pytest.fixture(scope="session")
@@ -29,8 +29,8 @@ def spark_session():
 
 def test_read_data(spark_session):
     # Arrange
-    file_path = "example.csv"
-    expected_columns = ["id", "name", "country"]
+    file_path = "example1.csv"
+    expected_columns = ['email', 'first_name', 'country', 'last_name', 'id']
 
     # Act
     df = read_data(spark_session, file_path)

@@ -33,4 +33,4 @@ def parse_arguments():
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     arguments = parse_arguments()
-    process_data(arguments.client, arguments.financial, arguments.countries)
+    result = process_data(arguments.client, arguments.financial, arguments.countries)

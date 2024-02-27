@@ -64,7 +64,7 @@ def log_dataframe_metadata(dataframe: DataFrame, dataframe_name: str, step_name:
     logger.debug("%s columns after loading: %s", dataframe_name, dataframe.columns)
 
 
-def process_data(client_path: str, financial_path: str, countries: List[str]) -> None:
+def process_data(client_path: str, financial_path: str, countries: List[str]) -> DataFrame:
     """
     The function processes the datasets and saves the results in client_data directory.
     :param client_path: filepath to client data
@@ -98,3 +98,4 @@ def process_data(client_path: str, financial_path: str, countries: List[str]) ->
     processed_df.write.csv("client_data/client_data.csv", mode="overwrite", header=True)
 
     logger.info("\n-----------------------------------------------------------------------------\n")
+    return processed_df
