@@ -1,3 +1,4 @@
+""" Startpoint for the data cleaning and parses the command line arguments """
 import argparse
 
 from clean import process_data
@@ -10,7 +11,8 @@ def parse_arguments():
     Returns:
     - Namespace, containing the arguments and their values.
     """
-    parser = argparse.ArgumentParser(description='Process paths to two datasets and a list of countries for filtering.')
+    parser = argparse.ArgumentParser(description='Process paths to two datasets '
+                                                 'and a list of countries for filtering.')
 
     # Argument for the first dataset path
     parser.add_argument('-cd', '--client', type=str, required=True,
@@ -32,4 +34,3 @@ def parse_arguments():
 if __name__ == '__main__':
     arguments = parse_arguments()
     process_data(arguments.client, arguments.financial, arguments.countries)
-
