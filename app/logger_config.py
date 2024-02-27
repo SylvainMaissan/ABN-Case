@@ -21,22 +21,22 @@ def get_custom_logger(name) -> logging.Logger:
     logger.setLevel(logging.DEBUG)  # Set the log level
 
     # Create a filehandler object
-    fh = logging.FileHandler('app.log', mode='a')
-    fh.setLevel(logging.INFO)
+    filehandler = logging.FileHandler('app.log', mode='a')
+    filehandler.setLevel(logging.INFO)
 
     # Create file formatter
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    fh.setFormatter(formatter)
-    logger.addHandler(fh)
+    filehandler.setFormatter(formatter)
+    logger.addHandler(filehandler)
 
     # Create console handler and set level to debug
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
+    consolehandler = logging.StreamHandler()
+    consolehandler.setLevel(logging.DEBUG)
 
     # Create console formatter
     formatter = (coloredlogs
                  .ColoredFormatter(fmt='%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
+    consolehandler.setFormatter(formatter)
+    logger.addHandler(consolehandler)
 
     return logger
