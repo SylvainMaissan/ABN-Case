@@ -25,3 +25,16 @@ The financial information dataset contains the following columns:
 - credit_card_number (cc_n)
 
 The code and data in this repository are provided for educational purposes only. They are not intended to be used in a production environment.
+
+## Usage
+
+```bash
+python script_name.py --client <path_to_client_dataset> --financial <path_to_financial_dataset> [--countries <country1> <country2> ...]
+```
+
+Replace `script_name.py` with the actual name of your Python script. This snippet provides a brief overview of the tool's purpose, how to use it, and descriptions of the command-line arguments.
+
+### Arguments
+- `-cd` `--client`: Path to the client dataset. **Required**.
+- `-fd`, `--financial`: Path to the financial dataset. **Required**.
+- `-c`, `--countries`: List of countries to filter the client dataset by. Space-separated. **Optional**.
