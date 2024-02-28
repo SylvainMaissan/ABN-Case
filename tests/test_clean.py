@@ -51,7 +51,6 @@ def test_clean_client_data_with_countries_argument(spark_session):
 
 def test_clean_financial_data(spark_session):
     # Arrange
-    countries = ["United Kingdom", "Netherlands"]
     financial_df = spark_session.createDataFrame([
         (1, "1wjtPamAZeGhRnZfhBAHHHjNvnHefd2V2", "visa - electron", 4175006996999270),
         (2, "1Js9BA1rV31hJFmN25rh8HWfrrYLXAyw9T", "jcb", 3587679584356527),
