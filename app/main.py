@@ -34,3 +34,4 @@ def parse_arguments():
 if __name__ == '__main__':
     arguments = parse_arguments()
     result = process_data(arguments.client, arguments.financial, arguments.countries)
+    result.write.csv("client_data/client_data.csv", mode="overwrite", header=True)

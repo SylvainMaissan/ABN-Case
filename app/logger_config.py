@@ -1,5 +1,6 @@
 """Creating and configuring a custom logger"""
 import logging
+from logging.handlers import RotatingFileHandler
 
 import coloredlogs
 
@@ -21,7 +22,7 @@ def get_custom_logger(name) -> logging.Logger:
     logger.setLevel(logging.DEBUG)  # Set the log level
 
     # Create a filehandler object
-    filehandler = logging.FileHandler('app.log', mode='a')
+    filehandler = RotatingFileHandler('app.log', maxBytes=1024, backupCount=0)
     filehandler.setLevel(logging.INFO)
 
     # Create file formatter

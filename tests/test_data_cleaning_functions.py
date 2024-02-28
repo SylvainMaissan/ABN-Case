@@ -7,11 +7,11 @@ from pyspark.sql import SparkSession
 from app.clean_functions import filter_data, rename_columns, read_data
 
 
-# @pytest.fixture(autouse=True)
-# def disable_logging():
-#     logging.disable(logging.CRITICAL)  # Disable all logging calls of CRITICAL and below
-#     yield
-#     logging.disable(logging.NOTSET)  # Re-enable logging
+@pytest.fixture(autouse=True)
+def disable_logging():
+    logging.disable(logging.CRITICAL)  # Disable all logging calls of CRITICAL and below
+    yield
+    logging.disable(logging.NOTSET)  # Re-enable logging
 
 
 @pytest.fixture(scope="session")

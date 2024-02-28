@@ -94,8 +94,5 @@ def process_data(client_path: str, financial_path: str, countries: List[str]) ->
                                                    "btc_a": "bitcoin_address",
                                                    "cc_t": "credit_card_type"})
     log_dataframe_metadata(processed_df, "Processed Dataset", "Renaming")
-
-    processed_df.write.csv("client_data/client_data.csv", mode="overwrite", header=True)
-
     logger.info("\n-----------------------------------------------------------------------------\n")
     return processed_df
