@@ -98,8 +98,8 @@ def test_clean_join_data(spark_session):
 
 def test_process_data(spark_session):
     # Arrange
-    client_path = "example1.csv"
-    financial_path = "example2.csv"
+    client_path = "tests/example1.csv"
+    financial_path = "tests/example2.csv"
     countries = ["United Kingdom", "Netherlands"]
 
     schema = StructType([

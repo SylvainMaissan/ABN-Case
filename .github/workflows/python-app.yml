@@ -44,3 +44,7 @@ jobs:
       continue-on-error: true
       run: |
         pylint $(git ls-files '*.py')
+
+    - name: Test with pytest
+      run: |
+        pytest tests/ 

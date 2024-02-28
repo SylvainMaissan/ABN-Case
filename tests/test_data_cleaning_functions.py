@@ -29,7 +29,7 @@ def spark_session():
 
 def test_read_data(spark_session):
     # Arrange
-    file_path = "example1.csv"
+    file_path = "tests/example1.csv"
     expected_columns = ['email', 'first_name', 'country', 'last_name', 'id']
 
     # Act
