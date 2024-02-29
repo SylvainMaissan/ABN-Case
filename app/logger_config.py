@@ -14,6 +14,10 @@ coloredlogs.DEFAULT_LEVEL_STYLES = {
 
 
 def log_dataframe_metadata(_func=None, *, logger_name="Data Cleaning"):
+    """
+    The decorator that logs the shape and columns of a dataframe after a specific step.
+    """
+
     def log_decorator(func):
         @functools.wraps(func)
         def wrapper_log_transform(*args, **kwargs):
