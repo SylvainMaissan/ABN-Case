@@ -8,9 +8,7 @@ import coloredlogs
 FILE_LOG_LEVEL = logging.INFO
 CONSOLE_LOG_LEVEL = logging.INFO
 
-coloredlogs.DEFAULT_LEVEL_STYLES = {
-    'info': {'color': 'white'}
-}
+coloredlogs.DEFAULT_LEVEL_STYLES = {'info': {'color': 'white'}}
 
 
 def log_dataframe_metadata(_func=None, *, logger_name="Data Cleaning"):
@@ -63,13 +61,13 @@ def get_custom_logger(name) -> logging.Logger:
     logger.addHandler(filehandler)
 
     # Create console handler and set level to debug
-    consolehandler = logging.StreamHandler()
-    consolehandler.setLevel(logging.DEBUG)
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.DEBUG)
 
     # Create console formatter
     formatter = (coloredlogs
                  .ColoredFormatter(fmt='%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-    consolehandler.setFormatter(formatter)
-    logger.addHandler(consolehandler)
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
 
     return logger
