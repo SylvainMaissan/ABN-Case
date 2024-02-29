@@ -1,12 +1,11 @@
 """Module containing the cleaning workflow and the specific transformation functions"""
-import inspect
 from typing import List
 
 from pyspark.sql import DataFrame
 from pyspark.sql import SparkSession
 
 import app.clean_functions as cf
-from app.logger_config import get_custom_logger
+from app.logger_config import log_dataframe_metadata
 
 spark = (SparkSession.builder
          .master("local")
@@ -14,9 +13,8 @@ spark = (SparkSession.builder
          .getOrCreate())
 spark.sparkContext.setLogLevel("ERROR")
 
-logger = get_custom_logger(__name__)
 
-
+@log_dataframe_metadata
 def clean_client_data(client_df: DataFrame, countries: List[str] = None) -> DataFrame:
     """
     The function cleans the client data.
@@ -25,14 +23,15 @@ def clean_client_data(client_df: DataFrame, countries: List[str] = None) -> Data
     :return: Dataframe
     """
     if countries:
-        logger.debug(
-            "Countries used as filter arguments: %s in %s function",
-            countries, inspect.currentframe().f_code.co_name
-        )
+        # logger.debug(
+        #     "Countries used as filter arguments: %s in %s function",
+        #     countries, inspect.currentframe().f_code.co_name
+        # )
         client_df = cf.filter_data(client_df, "country", countries)
     return client_df.drop("first_name", "last_name", "country")
 
 
+@log_dataframe_metadata
 def clean_financial_data(financial_df: DataFrame) -> DataFrame:
     """
     The function cleans the financial data.
@@ -42,6 +41,7 @@ def clean_financial_data(financial_df: DataFrame) -> DataFrame:
     return financial_df.drop("cc_n")
 
 
+@log_dataframe_metadata
 def join_dataframes(client_df: DataFrame, financial_df: DataFrame) -> DataFrame:
     """
     The function joins the two dataframes on the id column.
@@ -50,18 +50,6 @@ def join_dataframes(client_df: DataFrame, financial_df: DataFrame) -> DataFrame:
     :return: Dataframe
     """
     return client_df.join(financial_df, on="id", how="left").drop("client_id")
-
-
-def log_dataframe_metadata(dataframe: DataFrame, dataframe_name: str, step_name: str) -> None:
-    """
-    The function logs the shape and columns of a dataframe after a specific step.
-    :param dataframe: Dataframe for which statistics will be logged
-    :param dataframe_name: Name of the dataframe in the log
-    :param step_name: Process step that will be logged
-    """
-    logger.info("%s shape after %s: (%d, %d)", dataframe_name, step_name, dataframe.count(),
-                len(dataframe.columns))
-    logger.debug("%s columns after loading: %s", dataframe_name, dataframe.columns)
 
 
 def process_data(client_path: str, financial_path: str, countries: List[str]) -> DataFrame:
@@ -75,24 +63,17 @@ def process_data(client_path: str, financial_path: str, countries: List[str]) ->
     # Read data into a DataFrame
     client_df = cf.read_data(spark, client_path)
     financial_df = cf.read_data(spark, financial_path)
-    log_dataframe_metadata(client_df, "Client Dataset", "Extraction")
-    log_dataframe_metadata(financial_df, "Financial Dataset", "Extraction")
 
     # Clean and prepare for joining data
     client_df = clean_client_data(client_df, countries)
     financial_df = clean_financial_data(financial_df)
-    log_dataframe_metadata(client_df, "Client Dataset", "Cleaning")
-    log_dataframe_metadata(financial_df, "Financial Dataset", "Cleaning")
 
     # Join the two DataFrames
     processed_df = join_dataframes(client_df, financial_df)
-    log_dataframe_metadata(processed_df, "Processed Dataset", "Joining")
 
     # Rename Columns
     processed_df = cf.rename_columns(processed_df,
                                      name_mapping={"id": "client_identifier",
                                                    "btc_a": "bitcoin_address",
                                                    "cc_t": "credit_card_type"})
-    log_dataframe_metadata(processed_df, "Processed Dataset", "Renaming")
-    logger.info("\n-----------------------------------------------------------------------------\n")
     return processed_df

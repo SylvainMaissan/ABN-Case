@@ -4,7 +4,10 @@ from typing import Dict, Iterable
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col
 
+from app.logger_config import log_dataframe_metadata
 
+
+@log_dataframe_metadata
 def read_data(spark: SparkSession, file_path: str) -> DataFrame:
     """
     Read data into a DataFrame.
@@ -15,6 +18,7 @@ def read_data(spark: SparkSession, file_path: str) -> DataFrame:
     return spark.read.csv(file_path, header=True, inferSchema=True)
 
 
+@log_dataframe_metadata
 def filter_data(dataframe: DataFrame, column: str, allowed_values: Iterable = None) -> DataFrame:
     """
     Filter data by a column.
@@ -26,6 +30,7 @@ def filter_data(dataframe: DataFrame, column: str, allowed_values: Iterable = No
     return dataframe.filter(col(column).isin(allowed_values))
 
 
+@log_dataframe_metadata
 def rename_columns(dataframe: DataFrame, name_mapping: Dict[str, str]) -> DataFrame:
     """
     Rename columns in a DataFrame.
